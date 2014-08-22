@@ -1,11 +1,14 @@
 package main
 
-import ("net"
-        "log"
-        "bufio"
-        "fmt"
-        "net/textproto"
-      )
+import (
+    "net"
+    "log"
+    "bufio"
+    "fmt"
+    "regexp"
+    "net/textproto"
+)
+
 type Bot struct{
         server string
         port string
@@ -57,6 +60,14 @@ func main(){
         line, err := tp.ReadLine()
         if err != nil {
             log.Fatal("unable to connect to IRC server ", err)
+        }
+        iam, _ := regexp.MatchString(":!iam", line)
+        if iam  == true {
+            fmt.Fprintf(conn, "PRIVMSG %s :You are beautiful! \r\n", secretary.channel);
+        }
+        isPing, _ := regexp.MatchString("PING", line)
+        if isPing  == true {
+            fmt.Fprintf(conn, "PONG \r\n");
         }
         fmt.Printf("%s\n", line)
     }
