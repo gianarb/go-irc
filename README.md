@@ -20,7 +20,7 @@ type BotInterface interface {
 ```
 Is the Bot struct contain host, post, nickm user, channel..
 
-``go
+```go
 func NewBot(server string, port string, nick string, user string, channel string, pass string) *Bot
 ```
 Return new Bot
