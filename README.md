@@ -1,5 +1,5 @@
 ## go-irc
-Little lib for manage irc bot
+Library to interact with IRC.
 
 
 ### PACKAGE DOCUMENTATION
