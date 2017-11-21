@@ -15,9 +15,9 @@ type BotInterface interface {
 type Bot struct {
 	proxy         string
 	server        string
-	nick          string
-	user          string
-	channel       string
+	Nick          string
+	User          string
+	Channel       string
 	pass          string
 	pread, pwrite chan string
 	conn          net.Conn
@@ -27,13 +27,13 @@ func (bot *Bot) Send(command string) {
 	fmt.Fprintf(bot.conn, "%s \r\n", command)
 }
 
-func NewBot(proxy string, server string, nick string, user string, channel string, pass string) *Bot {
+func NewBot(proxy string, server string, Nick string, User string, Channel string, pass string) *Bot {
 	return &Bot{
 		proxy:   proxy,
 		server:  server,
-		nick:    nick,
-		user:    user,
-		channel: channel,
+		Nick:    Nick,
+		User:    User,
+		Channel: Channel,
 		pass:    pass,
 		conn:    nil,
 	}
@@ -59,9 +59,9 @@ func (bot *Bot) Connect() (conn net.Conn, err error) {
 	if len(bot.pass) > 0 {
 		bot.Send(fmt.Sprintf("PASS %s \r\n", bot.pass))
 	}
-	bot.Send(fmt.Sprintf("USER %s 8 * :%s", bot.nick, bot.nick))
-	bot.Send(fmt.Sprintf("NICK %s \r\n", bot.nick))
-	bot.Send(fmt.Sprintf("JOIN %s \r\n", bot.channel))
+	bot.Send(fmt.Sprintf("USER %s 8 * :%s", bot.User, bot.User))
+	bot.Send(fmt.Sprintf("NICK %s \r\n", bot.Nick))
+	bot.Send(fmt.Sprintf("JOIN %s \r\n", bot.Channel))
 
 	return bot.conn, err
 }

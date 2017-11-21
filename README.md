@@ -44,42 +44,52 @@ Best practice for managing simple update of lib
 package main
 
 import (
-    "log"
-    "fmt"
-    "regexp"
     "bufio"
+    "fmt"
+    irc "github.com/gmolveau/go-irc"
+    parser "gopkg.in/sorcix/irc.v2"
+    "log"
     "net/textproto"
-    "github.com/gmolveau/go-irc"
+    "time"
 )
- 
-func main(){
-    myBot := NewBot(
-        "",
-        "irc.freenode.net:6667",
-        "MyIRCBot",
-        "MyIRCBot",
-        "#channel",
+
+func main() {
+    // don't forget to `go get "gopkg.in/sorcix/irc.v2"`
+    // and to run Tor
+    bot := irc.NewBot(
+        "127.0.0.1:9050",
+        "freenodeok2gncmy.onion:6667",
+        "MySuperBot",
+        "MySuperBot",
+        "#go-nuts",
         "",
     )
-    conn, _ := myBot.Connect()
+    conn, _ := bot.Connect()
     defer conn.Close()
- 
-    verbose := true
-    reader := bufio.NewReader(bot.conn)
+    verbose := false
+    reader := bufio.NewReader(conn)
     tp := textproto.NewReader(reader)
     for {
         line, err := tp.ReadLine()
         if err != nil {
             log.Fatal("unable to connect to IRC server ", err)
         }
- 
-        isPing, _ := regexp.MatchString("PING", line)
-        if isPing  == true {
-            bot.Send("PONG");
-        }
-        
+        message := parser.ParseMessage(line)
         if verbose {
-            fmt.Printf("%s\n", line)
+            fmt.Printf("%v \n", message)
+        }
+
+        if message.Command == "PING" {
+            bot.Send(fmt.Sprint("PONG %d", time.Now().UnixNano()))
+        }
+
+        if message.Command == "PRIVMSG" {
+            if message.Params[0] == bot.Nick {
+                // this private message is of the bot
+                msg := message.Params[1]
+                // fmt.Println(msg)
+                // Do Something with this msg
+            }
         }
     }
 }
