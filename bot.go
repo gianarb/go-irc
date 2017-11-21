@@ -40,12 +40,15 @@ func NewBot(proxy string, server string, nick string, user string, channel strin
 }
 
 func (bot *Bot) Connect() (conn net.Conn, err error) {
-	if bot.proxy != "" {
+	if len(bot.proxy) > 0 {
 		dialer, err := proxy.SOCKS5("tcp", bot.proxy, nil, proxy.Direct)
 		if err != nil {
 			log.Fatal("unable to connect to proxy server ", err)
 		}
 		bot.conn, err = dialer.Dial("tcp", bot.server)
+		if err != nil {
+			log.Fatal("unable to connect to IRC server ", err)
+		}
 	} else {
 		bot.conn, err = net.Dial("tcp", bot.server)
 		if err != nil {
@@ -53,7 +56,9 @@ func (bot *Bot) Connect() (conn net.Conn, err error) {
 		}
 	}
 	log.Printf("Connected to IRC server %s (%s) \n", bot.server, bot.conn.RemoteAddr())
-
+	if len(bot.pass) > 0 {
+		bot.Send(fmt.Sprintf("PASS %s \r\n", bot.pass))
+	}
 	bot.Send(fmt.Sprintf("USER %s 8 * :%s", bot.nick, bot.nick))
 	bot.Send(fmt.Sprintf("NICK %s \r\n", bot.nick))
 	bot.Send(fmt.Sprintf("JOIN %s \r\n", bot.channel))
