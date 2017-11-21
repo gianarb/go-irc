@@ -1,9 +1,6 @@
 ## go-irc
 Library to interact with IRC.
 
-Forked from [gianarb/go-irc](https://github.com/gianarb/go-irc)
-
-
 ### PACKAGE DOCUMENTATION
 ```go
 package irc
