@@ -1,6 +1,8 @@
 ## go-irc
 Library to interact with IRC.
 
+Forked from [gianarb/go-irc](https://github.com/gianarb/go-irc)
+
 
 ### PACKAGE DOCUMENTATION
 ```go
@@ -18,12 +20,12 @@ type BotInterface interface {
     Send(string)
 }
 ```
-Is the Bot struct contain host, post, nickm user, channel..
+Bot struct contains : host, nickname, user, channel ...
 
 ```go
-func NewBot(server string, port string, nick string, user string, channel string, pass string) *Bot
+func NewBot(proxy string, server string, nick string, user string, channel string, pass string) *Bot
 ```
-Return new Bot
+Returns new Bot
 
 
 Bot Methods
@@ -35,7 +37,7 @@ type Message struct {
     Draft string
 }
 ```
-Best prative for manage simple update of lib
+Best practice for managing simple update of lib
 
 ### Use Case
 ```go
@@ -47,21 +49,22 @@ import (
     "regexp"
     "bufio"
     "net/textproto"
-    "github.com/gianarb/go-irc"
+    "github.com/gmolveau/go-irc"
 )
  
 func main(){
-    secretary := NewBot(
-        "irc.freenode.net",
-        "6667",
-        "SybilBot",
-        "SybilBot",
-        "#channel-name",
+    myBot := NewBot(
+        "",
+        "irc.freenode.net:6667",
+        "MyIRCBot",
+        "MyIRCBot",
+        "#channel",
         "",
     )
-    conn, _ := secretary.Connect()
+    conn, _ := myBot.Connect()
     defer conn.Close()
  
+    verbose := true
     reader := bufio.NewReader(bot.conn)
     tp := textproto.NewReader(reader)
     for {
@@ -75,8 +78,9 @@ func main(){
             bot.Send("PONG");
         }
         
- 
-        fmt.Printf("%s\n", line)
+        if verbose {
+            fmt.Printf("%s\n", line)
+        }
     }
 }
 ```
