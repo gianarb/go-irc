@@ -1,7 +1,6 @@
 ## go-irc
 Library to interact with IRC.
 
-
 ### PACKAGE DOCUMENTATION
 ```go
 package irc
@@ -18,12 +17,12 @@ type BotInterface interface {
     Send(string)
 }
 ```
-Is the Bot struct contain host, post, nickm user, channel..
+Bot struct contains : host, nickname, user, channel ...
 
 ```go
-func NewBot(server string, port string, nick string, user string, channel string, pass string) *Bot
+func NewBot(proxy string, server string, nick string, user string, channel string, pass string) *Bot
 ```
-Return new Bot
+Returns new Bot
 
 
 Bot Methods
@@ -35,48 +34,60 @@ type Message struct {
     Draft string
 }
 ```
-Best prative for manage simple update of lib
+Best practice for managing simple update of lib
 
 ### Use Case
 ```go
 package main
 
 import (
-    "log"
-    "fmt"
-    "regexp"
     "bufio"
+    "fmt"
+    irc "github.com/gianarb/go-irc"
+    parser "gopkg.in/sorcix/irc.v2"
+    "log"
     "net/textproto"
-    "github.com/gianarb/go-irc"
+    "time"
 )
- 
-func main(){
-    secretary := NewBot(
-        "irc.freenode.net",
-        "6667",
-        "SybilBot",
-        "SybilBot",
-        "#channel-name",
+
+func main() {
+    // don't forget to `go get "gopkg.in/sorcix/irc.v2"`
+    // and to run Tor
+    bot := irc.NewBot(
+        "127.0.0.1:9050",
+        "freenodeok2gncmy.onion:6667",
+        "MySuperBot",
+        "MySuperBot",
+        "#go-nuts",
         "",
     )
-    conn, _ := secretary.Connect()
+    conn, _ := bot.Connect()
     defer conn.Close()
- 
-    reader := bufio.NewReader(bot.conn)
+    verbose := false
+    reader := bufio.NewReader(conn)
     tp := textproto.NewReader(reader)
     for {
         line, err := tp.ReadLine()
         if err != nil {
             log.Fatal("unable to connect to IRC server ", err)
         }
- 
-        isPing, _ := regexp.MatchString("PING", line)
-        if isPing  == true {
-            bot.Send("PONG");
+        message := parser.ParseMessage(line)
+        if verbose {
+            fmt.Printf("%v \n", message)
         }
-        
- 
-        fmt.Printf("%s\n", line)
+
+        if message.Command == "PING" {
+            bot.Send(fmt.Sprint("PONG %d", time.Now().UnixNano()))
+        }
+
+        if message.Command == "PRIVMSG" {
+            if message.Params[0] == bot.Nick {
+                // this private message is of the bot
+                msg := message.Params[1]
+                // fmt.Println(msg)
+                // Do Something with this msg
+            }
+        }
     }
 }
 ```
