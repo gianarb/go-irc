@@ -43,7 +43,7 @@ package main
 import (
     "bufio"
     "fmt"
-    irc "github.com/gianarb/go-irc"
+    irc "go.gianarb.it/irc"
     parser "gopkg.in/sorcix/irc.v2"
     "log"
     "net/textproto"
